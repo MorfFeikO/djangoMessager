@@ -202,6 +202,7 @@ GitHub.sublime-settings
 
 Makefile.bak
 app/tests/test_db.sqlite3
+db.sqlite3
 .files_data/
 .vscode/
 pgdata/
