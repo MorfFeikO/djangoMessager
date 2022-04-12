@@ -1,4 +1,4 @@
-from django.contrib.auth.models import User
+from registration.models import User
 from rest_framework import serializers
 from .models import Message
 
@@ -6,7 +6,7 @@ from .models import Message
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = User
-        fields = ['url', 'username', 'messages']
+        fields = ['url', 'email', 'username', 'messages']
 
 
 class MessageSerializer(serializers.HyperlinkedModelSerializer):

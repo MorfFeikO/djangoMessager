@@ -25,6 +25,13 @@ router.register(r'messages', views.MessageViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    path(
+        'api-auth/',
+        include('rest_framework.urls', namespace='rest_framework')
+    ),
+    path(
+        'api-auth/register/',
+        include('registration.urls', namespace='registration')
+    ),
     path('admin/', admin.site.urls),
 ]
