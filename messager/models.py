@@ -18,7 +18,7 @@ class Profile(models.Model):
 class Message(models.Model):
     user = models.ForeignKey(
         User,
-        related_name="message",
+        related_name="messages",
         on_delete=models.DO_NOTHING,
     )
     body = models.CharField(max_length=100)

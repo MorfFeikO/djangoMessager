@@ -6,10 +6,12 @@ from .models import Message
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = User
-        fields = ['url', 'username', 'message']
+        fields = ['url', 'username', 'messages']
 
 
 class MessageSerializer(serializers.HyperlinkedModelSerializer):
+    owner = serializers.ReadOnlyField(source='user.username')
+
     class Meta:
         model = Message
-        fields = ['url', 'body', 'created_at']
+        fields = ['url', 'owner', 'body', 'created_at']
