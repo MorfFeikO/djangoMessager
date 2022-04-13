@@ -1,4 +1,5 @@
 from django.shortcuts import get_object_or_404
+
 from rest_framework import viewsets, permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -30,25 +31,39 @@ class MessageViewSet(viewsets.ModelViewSet):
 class FollowUnfollowView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
+    def make_follow(self, active_user, other_user):
+        if active_user.is_follow(other_user):
+            return Response(
+                {"follow": "User is already followed."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        active_user.follows.add(other_user)
+        other_user.followers.add(active_user)
+        return Response(
+            {"follow": "Successfully follows other user"},
+            status=status.HTTP_200_OK,
+        )
+
+    def make_unfollow(self, active_user, other_user):
+        if not active_user.is_follow(other_user):
+            return Response(
+                {"unfollow": "User is already unfollowed."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        active_user.follows.remove(other_user)
+        other_user.followers.remove(active_user)
+        return Response(
+            {"unfollow": "Successfully unfollow other user"},
+            status=status.HTTP_200_OK,
+        )
+
     def post(self, request, pk, req_type, format=None):
         current_profile = get_object_or_404(Profile, user=request.user)
         other_profile = get_object_or_404(Profile, pk=pk)
 
         if req_type == 'follow':
-            current_profile.follows.add(other_profile)
-            other_profile.followers.add(current_profile)
-
-            return Response(
-                {"follow": "Successfully follows other user"},
-                status=status.HTTP_200_OK,
-            )
+            return self.make_follow(current_profile, other_profile)
         elif req_type == 'unfollow':
-            current_profile.follows.remove(other_profile)
-            other_profile.followers.remove(current_profile)
-            return Response(
-                {"unfollow": "Successfully unfollow other user"},
-                status=status.HTTP_200_OK,
-            )
+            return self.make_unfollow(current_profile, other_profile)
 
-
-# check if user is already in the list, or is yet not
+# look, maybe it's possible to change follow\unfollow on users page

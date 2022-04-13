@@ -18,6 +18,11 @@ class Profile(models.Model):
         blank=True,
     )
 
+    def is_follow(self, other_user):
+        if other_user in self.follows.all():
+            return True
+        return False
+
     def __str__(self):
         return self.user.username
 
