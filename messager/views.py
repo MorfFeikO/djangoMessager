@@ -1,14 +1,14 @@
 from django.shortcuts import get_object_or_404
 
-from rest_framework import viewsets, permissions
+from rest_framework import viewsets, permissions, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework.decorators import action
 
 from registration.models import User
 
 from .models import Message, Profile
-from .serializers import UserSerializer, MessageSerializer
+from .serializers import UserSerializer, MessageSerializer, FollowSerializer
 from .permissions import IsOwnerOrReadOnly
 
 
@@ -18,20 +18,15 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly]
 
-
-class MessageViewSet(viewsets.ModelViewSet):
-    queryset = Message.objects.all().order_by('-created_at')
-    serializer_class = MessageSerializer
-    permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly]
-
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
-
-
-class FollowUnfollowView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
-
-    def make_follow(self, active_user, other_user):
+    @action(
+        methods=['post'],
+        detail=True,
+        permission_classes=[permissions.IsAuthenticated, IsOwnerOrReadOnly],
+        serializer_class=FollowSerializer,
+    )
+    def follow(self, request, pk, format=None):
+        active_user = get_object_or_404(Profile, user=request.user)
+        other_user = get_object_or_404(Profile, pk=pk)
         if active_user.is_follow(other_user):
             return Response(
                 {"follow": "User is already followed."},
@@ -44,7 +39,15 @@ class FollowUnfollowView(APIView):
             status=status.HTTP_200_OK,
         )
 
-    def make_unfollow(self, active_user, other_user):
+    @action(
+        methods=['post'],
+        detail=True,
+        permission_classes=[permissions.IsAuthenticated, IsOwnerOrReadOnly],
+        serializer_class=FollowSerializer,
+    )
+    def unfollow(self, request, pk, format=None):
+        active_user = get_object_or_404(Profile, user=request.user)
+        other_user = get_object_or_404(Profile, pk=pk)
         if not active_user.is_follow(other_user):
             return Response(
                 {"unfollow": "User is already unfollowed."},
@@ -57,13 +60,13 @@ class FollowUnfollowView(APIView):
             status=status.HTTP_200_OK,
         )
 
-    def post(self, request, pk, req_type, format=None):
-        current_profile = get_object_or_404(Profile, user=request.user)
-        other_profile = get_object_or_404(Profile, pk=pk)
 
-        if req_type == 'follow':
-            return self.make_follow(current_profile, other_profile)
-        elif req_type == 'unfollow':
-            return self.make_unfollow(current_profile, other_profile)
+class MessageViewSet(viewsets.ModelViewSet):
+    queryset = Message.objects.all().order_by('-created_at')
+    serializer_class = MessageSerializer
+    permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly]
 
-# look, maybe it's possible to change follow\unfollow on users page
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+# work on serializer followers
