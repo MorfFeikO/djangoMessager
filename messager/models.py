@@ -1,4 +1,5 @@
 from django.db import models
+from django.http import Http404
 from registration.models import User
 
 
@@ -16,6 +17,20 @@ class Profile(models.Model):
         symmetrical=False,
         blank=True,
     )
+
+    @classmethod
+    def current_profile(cls, user):
+        try:
+            return cls.objects.get(user=user)
+        except cls.DoesNotExist:
+            raise Http404
+
+    @classmethod
+    def other_profile(cls, pk):
+        try:
+            return cls.objects.get(id=pk)
+        except cls.DoesNotExist:
+            raise Http404
 
     def __str__(self):
         return self.user.username

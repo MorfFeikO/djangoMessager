@@ -34,5 +34,5 @@ urlpatterns = [
         include('registration.urls', namespace='registration')
     ),
     path('admin/', admin.site.urls),
-    path('api/users/<str:pk>/<str:req_type>/', views.FollowUnfollow.as_view(), name='follow'),
+    path('api/users/<str:pk>/<str:req_type>/', views.FollowUnfollowView.as_view(), name='follow'),
 ]

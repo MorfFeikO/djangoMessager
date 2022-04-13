@@ -1,5 +1,3 @@
-from django.http import Http404
-
 from registration.models import User
 from rest_framework import viewsets, permissions
 from rest_framework.views import APIView
@@ -26,27 +24,12 @@ class MessageViewSet(viewsets.ModelViewSet):
         serializer.save(user=self.request.user)
 
 
-class FollowUnfollow(APIView):
+class FollowUnfollowView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
-    def current_profile(self):
-        try:
-            return Profile.objects.get(user=self.request.user)
-        except Profile.DoesNotExist:
-            raise Http404
-
-    def other_profile(self, pk):
-        try:
-            return Profile.objects.get(id=pk)
-        except Profile.DoesNotExist:
-            raise Http404
-
     def post(self, request, pk, req_type, format=None):
-        # pk = request.data.get('id')
-        # request_type = request.data.get('type')
-
-        current_profile = self.current_profile()
-        other_profile = self.other_profile(pk)
+        current_profile = Profile.current_profile(request.user)
+        other_profile = Profile.other_profile(pk)
 
         if req_type == 'follow':
             current_profile.follows.add(other_profile)
@@ -62,6 +45,3 @@ class FollowUnfollow(APIView):
                 {"unfollow": "Successfully unfollow other user"},
                 status=status.HTTP_200_OK,
             )
-
-
-
