@@ -1,8 +1,10 @@
-from registration.models import User
+from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+
+from registration.models import User
 
 from .models import Message, Profile
 from .serializers import UserSerializer, MessageSerializer
@@ -29,11 +31,10 @@ class FollowUnfollowView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, pk, req_type, format=None):
-        current_profile = Profile.current_profile(request.user)
-        other_profile = Profile.other_profile(pk)
+        current_profile = get_object_or_404(Profile, user=request.user)
+        other_profile = get_object_or_404(Profile, pk=pk)
 
         if req_type == 'follow':
-            # Add selected user to `follows` and to selected user's `followers`
             current_profile.follows.add(other_profile)
             other_profile.followers.add(current_profile)
 
@@ -48,3 +49,6 @@ class FollowUnfollowView(APIView):
                 {"unfollow": "Successfully unfollow other user"},
                 status=status.HTTP_200_OK,
             )
+
+
+# check if user is already in the list, or is yet not
