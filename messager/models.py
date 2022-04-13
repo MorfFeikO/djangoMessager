@@ -6,7 +6,13 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     follows = models.ManyToManyField(
         "self",
-        related_name="followed_by",
+        related_name="user_follows",
+        symmetrical=False,
+        blank=True,
+    )
+    followers = models.ManyToManyField(
+        "self",
+        related_name="users_followers",
         symmetrical=False,
         blank=True,
     )
