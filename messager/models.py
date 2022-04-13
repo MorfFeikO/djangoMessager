@@ -37,7 +37,7 @@ class Profile(models.Model):
 
 
 class Message(models.Model):
-    user = models.ForeignKey(
+    owner = models.ForeignKey(
         User,
         related_name="messages",
         on_delete=models.DO_NOTHING,
@@ -46,4 +46,4 @@ class Message(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Message -> {self.user.username}-{self.created_at}"
+        return f"Message -> {self.owner.username}-{self.created_at}"

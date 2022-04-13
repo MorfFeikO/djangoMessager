@@ -6,19 +6,20 @@ from rest_framework import status
 
 from .models import Message, Profile
 from .serializers import UserSerializer, MessageSerializer
+from .permissions import IsOwnerOrReadOnly
 
 
 class UserViewSet(viewsets.ModelViewSet):
     """API endpoint that allows users to be viewed or editied."""
     queryset = User.objects.all().order_by('-created_at')
     serializer_class = UserSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly]
 
 
 class MessageViewSet(viewsets.ModelViewSet):
     queryset = Message.objects.all().order_by('-created_at')
     serializer_class = MessageSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly]
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
@@ -35,11 +36,6 @@ class FollowUnfollowView(APIView):
             # Add selected user to `follows` and to selected user's `followers`
             current_profile.follows.add(other_profile)
             other_profile.followers.add(current_profile)
-
-            # update messages with selected user `messages`
-            other_user_messages = other_profile.user.messages.all()
-            for message in other_user_messages:
-                current_profile.user.messages.add(message)
 
             return Response(
                 {"follow": "Successfully follows other user"},
