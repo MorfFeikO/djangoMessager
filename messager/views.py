@@ -32,8 +32,15 @@ class FollowUnfollowView(APIView):
         other_profile = Profile.other_profile(pk)
 
         if req_type == 'follow':
+            # Add selected user to `follows` and to selected user's `followers`
             current_profile.follows.add(other_profile)
             other_profile.followers.add(current_profile)
+
+            # update messages with selected user `messages`
+            other_user_messages = other_profile.user.messages.all()
+            for message in other_user_messages:
+                current_profile.user.messages.add(message)
+
             return Response(
                 {"follow": "Successfully follows other user"},
                 status=status.HTTP_200_OK,
