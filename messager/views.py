@@ -89,5 +89,5 @@ class MessageViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
-# work on get followers
-
+# work on get followers and likes
+# run tests and find out what should we write to test
