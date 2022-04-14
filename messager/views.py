@@ -17,13 +17,13 @@ from .utils import success_response, repeated_action_response
 
 
 class UserViewSet(viewsets.ModelViewSet):
-    """API endpoint that allows users to be viewed or editied."""
+    """API endpoint that allows users to be viewed or edited."""
     queryset = User.objects.all().order_by('-created_at')
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly]
 
     @action(
-        methods=['post'],
+        methods=['post', 'get'],
         detail=True,
         permission_classes=[permissions.IsAuthenticated, IsOwnerOrReadOnly],
         serializer_class=FollowSerializer,
@@ -38,7 +38,7 @@ class UserViewSet(viewsets.ModelViewSet):
         return success_response(task)
 
     @action(
-        methods=['post'],
+        methods=['post', 'get'],
         detail=True,
         permission_classes=[permissions.IsAuthenticated, IsOwnerOrReadOnly],
         serializer_class=FollowSerializer,
@@ -87,7 +87,14 @@ class MessageViewSet(viewsets.ModelViewSet):
         return success_response(task)
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        serializer.save(owner=self.request.user)
 
-# work on get followers
-
+# work on get followers and likes
+# run tests and find out what should we write to test (make comm.)
+# add pre-commit and pre-push and make run this separately
+# .env
+# devide urls
+# merge `task/add-jwt`
+# django-email-confirmation
+# django-any (for tests)
+# delete post method
