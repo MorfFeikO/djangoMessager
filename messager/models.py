@@ -1,5 +1,5 @@
 from django.db import models
-from django.http import Http404
+
 from registration.models import User
 
 
@@ -34,7 +34,18 @@ class Message(models.Model):
         on_delete=models.DO_NOTHING,
     )
     body = models.CharField(max_length=100)
+    liked_by = models.ManyToManyField(
+        Profile,
+        related_name="liked",
+        symmetrical=False,
+        blank=True,
+    )
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def is_liked_by(self, user):
+        if user in self.liked_by.all():
+            return True
+        return False
 
     def __str__(self):
         return f"Message -> {self.owner.username}-{self.created_at}"

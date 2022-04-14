@@ -1,5 +1,7 @@
-from registration.models import User
 from rest_framework import serializers
+
+from registration.models import User
+
 from .models import Message, Profile
 
 
@@ -25,3 +27,12 @@ class FollowSerializer(serializers.ModelSerializer):
         model = Profile
         fields = ['follows', 'followers']
         read_only_fields = ['follows', 'followers']
+
+
+class LikeSerializer(serializers.ModelSerializer):
+    like = MessageSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Profile
+        fields = ['like']
+        read_only_fields = ['like']
