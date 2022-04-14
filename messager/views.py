@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404
 
-from rest_framework import viewsets, permissions
+from rest_framework import viewsets, permissions, mixins, generics
 from rest_framework.decorators import action
 
 from registration.models import User
@@ -16,7 +16,11 @@ from .permissions import IsOwnerOrReadOnly
 from .utils import success_response, repeated_action_response
 
 
-class UserViewSet(viewsets.ModelViewSet):
+class UserViewSet(mixins.RetrieveModelMixin,
+                  mixins.UpdateModelMixin,
+                  mixins.DestroyModelMixin,
+                  mixins.ListModelMixin,
+                  viewsets.GenericViewSet):
     """API endpoint that allows users to be viewed or edited."""
     queryset = User.objects.all().order_by('-created_at')
     serializer_class = UserSerializer
@@ -93,8 +97,6 @@ class MessageViewSet(viewsets.ModelViewSet):
 # run tests and find out what should we write to test (make comm.)
 # add pre-commit and pre-push and make run this separately
 # .env
-# devide urls
 # merge `task/add-jwt`
 # django-email-confirmation
 # django-any (for tests)
-# delete post method
