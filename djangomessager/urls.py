@@ -15,7 +15,14 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+
 from rest_framework import routers
+
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+)
+
 from messager import views
 
 
@@ -25,13 +32,15 @@ router.register(r'messages', views.MessageViewSet)
 
 urlpatterns = [
     path('api/', include(router.urls)),
-    path(
-        'api-auth/',
-        include('rest_framework.urls', namespace='rest_framework')
-    ),
-    path(
-        'api-auth/register/',
-        include('registration.urls', namespace='registration')
-    ),
+    path('api-auth/',
+         include('rest_framework.urls', namespace='rest_framework')),
+    path('api-auth/register/',
+         include('registration.urls', namespace='registration')),
+    path('api-auth/token/',
+         TokenObtainPairView.as_view(),
+         name='token_obtain'),
+    path('api-auth/token/refresh',
+         TokenRefreshView.as_view(),
+         name='token_refresh'),
     path('admin/', admin.site.urls),
 ]
