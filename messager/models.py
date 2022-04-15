@@ -35,7 +35,7 @@ class Message(models.Model):
     )
     body = models.CharField(max_length=100)
     liked_by = models.ManyToManyField(
-        Profile,
+        User,
         related_name="liked",
         symmetrical=False,
         blank=True,

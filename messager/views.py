@@ -9,7 +9,6 @@ from .models import Message, Profile
 from .serializers import (
     UserSerializer,
     MessageSerializer,
-    LikeSerializer,
     ProfileSerializer,
 )
 from .permissions import IsOwnerOrReadOnly
@@ -30,7 +29,7 @@ class UserViewSet(mixins.RetrieveModelMixin,
         detail=True,
         permission_classes=[permissions.IsAuthenticated, IsOwnerOrReadOnly],
     )
-    def follow(self, request, pk, task="follow", format=None):
+    def follow(self, request, pk, task="follow"):
         active_user = get_object_or_404(Profile, user=request.user)
         other_user = get_object_or_404(Profile, pk=pk)
         if active_user.is_follow(other_user):
@@ -43,7 +42,7 @@ class UserViewSet(mixins.RetrieveModelMixin,
         detail=True,
         permission_classes=[permissions.IsAuthenticated, IsOwnerOrReadOnly],
     )
-    def unfollow(self, request, pk, task="unfollow", format=None):
+    def unfollow(self, request, pk, task="unfollow"):
         active_user = get_object_or_404(Profile, user=request.user)
         other_user = get_object_or_404(Profile, pk=pk)
         if not active_user.is_follow(other_user):
@@ -69,12 +68,10 @@ class MessageViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly]
 
     @action(
-        methods=['post'],
         detail=True,
         permission_classes=[permissions.IsAuthenticated, IsOwnerOrReadOnly],
-        serializer_class=LikeSerializer,
     )
-    def like(self, request, pk, task="like", format=None):
+    def like(self, request, pk, task="like"):
         active_user = get_object_or_404(Profile, user=request.user)
         message = get_object_or_404(Message, pk=pk)
         if message.is_liked_by(active_user):
@@ -83,12 +80,10 @@ class MessageViewSet(viewsets.ModelViewSet):
         return success_response(task)
 
     @action(
-        methods=['post'],
         detail=True,
         permission_classes=[permissions.IsAuthenticated, IsOwnerOrReadOnly],
-        serializer_class=LikeSerializer,
     )
-    def dislike(self, request, pk, task="dislike", format=None):
+    def dislike(self, request, pk, task="dislike"):
         active_user = get_object_or_404(Profile, user=request.user)
         message = get_object_or_404(Message, pk=pk)
         if not message.is_liked_by(active_user):
@@ -98,6 +93,12 @@ class MessageViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
+
+
+# class LikeViewSet(viewsets.ModelViewSet):
+#     queryset = Message.objects.all()
+#     serializer_class = LikeSerializer
+#     permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly]
 
 # work on get followers and likes
 # run tests and find out what should we write to test (make comm.)
