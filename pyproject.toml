@@ -8,6 +8,8 @@ authors = ["Oleksandr Bozbei <a.s.bozbei@gmail.com>"]
 python = "^3.9"
 Django = "^4.0.4"
 djangorestframework = "^3.13.1"
+coverage = "^6.3.2"
+python-dotenv = "^0.20.0"
 
 [tool.poetry.dev-dependencies]
 

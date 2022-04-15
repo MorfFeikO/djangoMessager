@@ -8,4 +8,8 @@ superuser:
 	python manage.py createsuperuser
 runserver:
 	python manage.py runserver
+coverage:
+	coverage run --source='.' manage.py test messager
+report:
+	coverage report -m
 
