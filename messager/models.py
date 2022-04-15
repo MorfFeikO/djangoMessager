@@ -6,13 +6,13 @@ from registration.models import User
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     follows = models.ManyToManyField(
-        "self",
+        User,
         related_name="user_follows",
         symmetrical=False,
         blank=True,
     )
     followers = models.ManyToManyField(
-        "self",
+        User,
         related_name="users_followers",
         symmetrical=False,
         blank=True,

@@ -53,7 +53,11 @@ class UserViewSet(mixins.RetrieveModelMixin,
         return success_response(task)
 
 
-class ProfileViewSet(viewsets.ModelViewSet):
+class ProfileViewSet(mixins.RetrieveModelMixin,
+                     mixins.UpdateModelMixin,
+                     mixins.DestroyModelMixin,
+                     mixins.ListModelMixin,
+                     viewsets.GenericViewSet):
     queryset = Profile.objects.all()
     serializer_class = ProfileSerializer
     permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly]

@@ -6,14 +6,14 @@ from .models import Message, Profile
 
 
 class ProfileSerializer(serializers.HyperlinkedModelSerializer):
+
     class Meta:
         model = Profile
-        fields = ['follows', 'followers']
-        read_only_fields = ['follows', 'followers']
+        fields = ['url', 'follows', 'followers']
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
-    profile = ProfileSerializer()
+    profile = ProfileSerializer(read_only=True)
 
     class Meta:
         model = User
