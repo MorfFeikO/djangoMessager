@@ -5,10 +5,20 @@ from registration.models import User
 from .models import Message, Profile
 
 
+class ProfileSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Profile
+        fields = ['follows', 'followers']
+        read_only_fields = ['follows', 'followers']
+
+
 class UserSerializer(serializers.HyperlinkedModelSerializer):
+    profile = ProfileSerializer()
+
     class Meta:
         model = User
-        fields = ['url', 'email', 'username', 'messages']
+        fields = ['url', 'email', 'username', 'messages', 'profile']
+        read_only_fields = ['email', 'messages']
 
 
 class MessageSerializer(serializers.HyperlinkedModelSerializer):
@@ -17,16 +27,6 @@ class MessageSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Message
         fields = ['url', 'owner', 'body', 'created_at']
-
-
-class FollowSerializer(serializers.ModelSerializer):
-    follows = UserSerializer(many=True, read_only=True)
-    followers = UserSerializer(many=True, read_only=True)
-
-    class Meta:
-        model = Profile
-        fields = ['follows', 'followers']
-        read_only_fields = ['follows', 'followers']
 
 
 class LikeSerializer(serializers.ModelSerializer):

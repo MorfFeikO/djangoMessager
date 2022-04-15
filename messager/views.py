@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404
 
-from rest_framework import viewsets, permissions, mixins, generics
+from rest_framework import viewsets, permissions, mixins
 from rest_framework.decorators import action
 
 from registration.models import User
@@ -9,8 +9,8 @@ from .models import Message, Profile
 from .serializers import (
     UserSerializer,
     MessageSerializer,
-    FollowSerializer,
     LikeSerializer,
+    ProfileSerializer,
 )
 from .permissions import IsOwnerOrReadOnly
 from .utils import success_response, repeated_action_response
@@ -27,10 +27,8 @@ class UserViewSet(mixins.RetrieveModelMixin,
     permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly]
 
     @action(
-        methods=['post', 'get'],
         detail=True,
         permission_classes=[permissions.IsAuthenticated, IsOwnerOrReadOnly],
-        serializer_class=FollowSerializer,
     )
     def follow(self, request, pk, task="follow", format=None):
         active_user = get_object_or_404(Profile, user=request.user)
@@ -42,10 +40,8 @@ class UserViewSet(mixins.RetrieveModelMixin,
         return success_response(task)
 
     @action(
-        methods=['post', 'get'],
         detail=True,
         permission_classes=[permissions.IsAuthenticated, IsOwnerOrReadOnly],
-        serializer_class=FollowSerializer,
     )
     def unfollow(self, request, pk, task="unfollow", format=None):
         active_user = get_object_or_404(Profile, user=request.user)
@@ -55,6 +51,12 @@ class UserViewSet(mixins.RetrieveModelMixin,
         active_user.follows.remove(other_user)
         other_user.followers.remove(active_user)
         return success_response(task)
+
+
+class ProfileViewSet(viewsets.ModelViewSet):
+    queryset = Profile.objects.all()
+    serializer_class = ProfileSerializer
+    permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly]
 
 
 class MessageViewSet(viewsets.ModelViewSet):
