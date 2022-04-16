@@ -30,12 +30,12 @@ class UserViewSet(mixins.RetrieveModelMixin,
         permission_classes=[permissions.IsAuthenticated, IsOwnerOrReadOnly],
     )
     def follow(self, request, pk, task="follow"):
-        active_user = get_object_or_404(Profile, user=request.user)
-        other_user = get_object_or_404(Profile, pk=pk)
-        if active_user.is_follow(other_user):
+        active_profile = get_object_or_404(Profile, user=request.user)
+        other_profile = get_object_or_404(Profile, pk=pk)
+        if active_profile.is_follow(other_profile.user):
             return repeated_action_response(task)
-        active_user.follows.add(other_user)
-        other_user.followers.add(active_user)
+        active_profile.follows.add(other_profile.user)
+        other_profile.followers.add(active_profile.user)
         return success_response(task)
 
     @action(
@@ -43,12 +43,12 @@ class UserViewSet(mixins.RetrieveModelMixin,
         permission_classes=[permissions.IsAuthenticated, IsOwnerOrReadOnly],
     )
     def unfollow(self, request, pk, task="unfollow"):
-        active_user = get_object_or_404(Profile, user=request.user)
-        other_user = get_object_or_404(Profile, pk=pk)
-        if not active_user.is_follow(other_user):
+        active_profile = get_object_or_404(Profile, user=request.user)
+        other_profile = get_object_or_404(Profile, pk=pk)
+        if not active_profile.is_follow(other_profile.user):
             return repeated_action_response(task)
-        active_user.follows.remove(other_user)
-        other_user.followers.remove(active_user)
+        active_profile.follows.remove(other_profile.user)
+        other_profile.followers.remove(active_profile.user)
         return success_response(task)
 
 
@@ -72,11 +72,10 @@ class MessageViewSet(viewsets.ModelViewSet):
         permission_classes=[permissions.IsAuthenticated, IsOwnerOrReadOnly],
     )
     def like(self, request, pk, task="like"):
-        active_user = get_object_or_404(Profile, user=request.user)
         message = get_object_or_404(Message, pk=pk)
-        if message.is_liked_by(active_user):
+        if message.is_liked_by(request.user):
             return repeated_action_response(task)
-        message.liked_by.add(active_user)
+        message.liked_by.add(request.user)
         return success_response(task)
 
     @action(
@@ -84,26 +83,20 @@ class MessageViewSet(viewsets.ModelViewSet):
         permission_classes=[permissions.IsAuthenticated, IsOwnerOrReadOnly],
     )
     def dislike(self, request, pk, task="dislike"):
-        active_user = get_object_or_404(Profile, user=request.user)
         message = get_object_or_404(Message, pk=pk)
-        if not message.is_liked_by(active_user):
+        if not message.is_liked_by(request.user):
             return repeated_action_response(task)
-        message.liked_by.remove(active_user)
+        message.liked_by.remove(request.user)
         return success_response(task)
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
 
 
-# class LikeViewSet(viewsets.ModelViewSet):
-#     queryset = Message.objects.all()
-#     serializer_class = LikeSerializer
-#     permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly]
-
-# work on get followers and likes
-# run tests and find out what should we write to test (make comm.)
-# add pre-commit and pre-push and make run this separately
-# .env
-# merge `task/add-jwt`
-# django-email-confirmation
+# write tests
 # django-any (for tests)
+
+# django-postgres connect if debug=false?
+# django-email-confirmation
+
+# merge `task/add-jwt`

@@ -18,8 +18,8 @@ class Profile(models.Model):
         blank=True,
     )
 
-    def is_follow(self, other_user):
-        if other_user in self.follows.all():
+    def is_follow(self, user: User) -> bool:
+        if user in self.follows.all():
             return True
         return False
 
@@ -42,7 +42,7 @@ class Message(models.Model):
     )
     created_at = models.DateTimeField(auto_now_add=True)
 
-    def is_liked_by(self, user):
+    def is_liked_by(self, user: User) -> bool:
         if user in self.liked_by.all():
             return True
         return False
