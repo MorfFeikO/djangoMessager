@@ -9,7 +9,7 @@ superuser:
 runserver:
 	python manage.py runserver
 coverage:
-	coverage run --source='.' manage.py test messager
+	coverage run --source='.' manage.py test
 report:
 	coverage report -m
 
