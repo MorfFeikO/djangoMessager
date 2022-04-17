@@ -14,7 +14,10 @@ report:
 	coverage report -m
 db-init:
 	sudo -u postgres createdb newdb2;
-init-start: db-init migrate superuser runserver
+init-start: venv init-poetry db-init migrate superuser runserver
 	@echo 'Server successfuly started.'
-
+init-poetry:
+	curl -sSL https://install.python-poetry.org | python3 -
+venv:
+	python3 -m venv venv
 
