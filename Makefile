@@ -12,4 +12,9 @@ coverage:
 	coverage run --source='.' manage.py test
 report:
 	coverage report -m
+db-init:
+	sudo -u postgres createdb newdb2;
+init-start: db-init migrate superuser runserver
+	@echo 'Server successfuly started.'
+
 

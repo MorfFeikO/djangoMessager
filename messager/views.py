@@ -91,6 +91,3 @@ class MessageViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
-
-# make postgres comm
-# merge `task/add-jwt`
