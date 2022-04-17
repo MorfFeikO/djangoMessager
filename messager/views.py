@@ -92,11 +92,5 @@ class MessageViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
 
-
-# write tests
-# django-any (for tests)
-
-# django-postgres connect if debug=false?
-# django-email-confirmation
-
+# make postgres comm
 # merge `task/add-jwt`
